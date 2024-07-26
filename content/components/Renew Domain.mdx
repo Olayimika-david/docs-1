@@ -1,0 +1,43 @@
+
+# Renew Domain
+
+The renew action is used to send a renew command to the registrar.
+
+## Endpoint
+**POST** - `/order/domains/renew`
+
+## Request Parameters
+
+| Name    | Type    | Required | Description                                    |
+|---------|---------|----------|------------------------------------------------|
+| domain  | text    | Yes      | Domain name                                    |
+| regperiod | numeric | Yes      | Renewal period                                 |
+| addons  | array   | No       | Enables DNS management, email forwarding, and/or ID protection for this domain |
+
+## Sample Renewal Domain Request
+
+```php
+$endpoint = "https://www.whogohost.com/host/modules/addons/DomainsReseller/api/index.php";
+$action = "/order/domains/renew";
+$params = [
+    "domain" => "example.com",
+    "regperiod" => "1",
+    "addons" => [
+        "dnsmanagement" => 0,
+        "emailforwarding" => 1,
+        "idprotection" => 1,     
+    ],
+];
+$headers = [
+    "username: email@example.com",
+    "token: " . base64_encode(hash_hmac("sha256", "1234567890QWERTYUIOPASDFGHJKLZXCVBNM", "email@example.com:" . gmdate("y-m-d H")))
+];
+$curl = curl_init();
+curl_setopt($curl, CURLOPT_URL, "{$endpoint}{$action}");
+curl_setopt($curl, CURLOPT_POST, true);
+curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query($params));
+curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, true);
+curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
+$response = curl_exec($curl);
+curl_close($curl);
